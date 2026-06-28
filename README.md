@@ -48,7 +48,7 @@ npm run client
 
 ## Roadmap
 
-- [ ] v0.1.0 - Protótipo
+- [x] v0.1.0 - Protótipo
 - [ ] v0.2.0 — Servidor TCP
 - [ ] v0.3.0 — Cliente TCP
 - [ ] v0.4.0 — Troca de mensagens
