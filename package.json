@@ -2,8 +2,11 @@
   "name": "backdrop",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {},
+  "main": "server.js",
+  "scripts": {
+    "server": "node server/server.js",
+    "client": "node client/client.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
