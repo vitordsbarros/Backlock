@@ -27,7 +27,7 @@ O objetivo é criar um mensageiro de terminal para um grupo restrito de usuário
 ## Estrutura
 
 ```
-BlackRoom/
+Backlock/
 ├── client/
 └── server/
 ```
