@@ -1,69 +1,43 @@
-const net = require("net");
-const { buffer } = require("stream/consumers");
+// server/server.js
+const tls = require('tls');
+const fs = require('fs');
+const path = require('path');
+const engine = require('./engine');
+const lifecycle = require('./lifecycle');
+const { ensureCertificates } = require('../admin/certManager');
 
-const HOST = "0.0.0.0";
-const PORT = 3000;
+const PORT = process.env.PORT || 8080;
 
-let server;
+async function bootstrap() {
+    try {
+        // Aguarda a verificação/geração dos certificados
+        await ensureCertificates();
 
-function start() {
-    server = createServer();
-    registerEvents(server);
-    listen(server);
+        // Agora é seguro ler os arquivos
+        const options = {
+            key: fs.readFileSync(path.join(__dirname, '../data/certs/server.key')),
+            cert: fs.readFileSync(path.join(__dirname, '../data/certs/server.crt')),
+        };
+
+        // Inicia o servidor
+        const server = tls.createServer(options, (socket) => {
+            engine.handleConnection(socket);
+        });
+
+        server.listen(PORT, () => {
+            console.log(`\n Backlock Server iniciado (TLS) na porta ${PORT}`);
+            lifecycle.startIdleTimer();
+        });
+
+        server.on('error', (err) => {
+            console.error("Erro fatal no servidor:", err);
+        });
+
+    } catch (error) {
+        console.error("❌ Falha ao iniciar o servidor:", error.message);
+        process.exit(1);
+    }
 }
 
-function createServer() {
-    return net.createServer();
-}
-
-function registerEvents(server) {
-    server.on("connection", onConnection);
-    server.on("error", onError);
-    server.on("listening", onListening);
-}
-
-function listen(server) {
-    server.listen(PORT, HOST);
-}
-
-function onListening() {
-    console.clear();
-
-    console.log("Servidor iniciado.")
-    console.log(`Host: ${HOST}`);
-    console.log(`Porta: ${PORT}`);
-    console.log();
-}
-
-function onConnection(socket) {
-    console.log("Novo cliente conectado!");
-    console.log(socket.remoteAddress);
-    console.log();
-
-    socket.on("data", (buffer) => {
-        onMessage(socket, buffer);
-    });
-
-    socket.on("close", () => {
-        console.log("Cliente desconectado.");
-    });
-
-    socket.on("error", (error) => {
-        console.log("Erro do socket", error.code);
-    })
-}
-
-function onMessage(socket, buffer) {
-    const message = buffer.toString();
-
-    console.log("Mensagem recebida");
-    console.log(`Cliente: ${socket.remoteAddress}`);
-    console.log(`Texto: ${message}`);
-    console.log()
-}
-
-function onError(error) {
-    console.log(error.message);
-}
-
-start();
+// Executa a inicialização
+bootstrap();

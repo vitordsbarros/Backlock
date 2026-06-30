@@ -2,9 +2,9 @@
   "name": "backdrop",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "server": "node server/server.js",
+    "server": "node --env-file=.env server/server.js",
     "client": "node client/client.js"
   },
   "keywords": [],
@@ -16,9 +16,9 @@
     "boxen": "^8.0.1",
     "chalk": "^5.6.2",
     "dayjs": "^1.11.21",
-    "dotenv": "^17.4.2",
     "figlet": "^1.11.0",
     "ora": "^9.4.1",
+    "selfsigned": "^5.5.0",
     "uuid": "^14.0.1"
   }
 }
