@@ -1,7 +1,14 @@
+# Dependências do Node
 node_modules/
 
-.vscode/
+# Variáveis de ambiente
+.env
 
-.DS_Store
+# Cofre de senhas e certificados (NUNCA SUBIR)
+data/
+*.vault
+*.key
+*.crt
 
-Thumbs.db
+# Logs de erro (se houver)
+npm-debug.log*

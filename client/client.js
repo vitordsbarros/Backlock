@@ -1,68 +1,55 @@
-const net = require("net");
-const readline = require("readline");
+const readline = require('readline');
+const network = require('./network');
 
-const HOST = "127.0.0.1";
-const PORT = 3000;
+async function startClient() {
+    const { default: chalk } = await import('chalk');
+    const { default: boxen } = await import('boxen');
+    const figlet = require('figlet');
 
-let client;
-let rl;
+    console.clear();
+    console.log(
+        chalk.redBright(
+            figlet.textSync('Backlock', { horizontalLayout: 'full' })
+        )
+    );
+    console.log(boxen(chalk.gray('Secure Terminal Environment'), { padding: 1, borderStyle: 'double', borderColor: 'red' }));
 
-function start() {
-    client = createConnection();
-    rl = createTerminal();
-    registerEvents();
-}
-
-function createConnection() {
-    return net.createConnection({
-        host: HOST,
-        port: PORT
-    });
-}
-
-function createTerminal() {
-    return readline.createInterface({
+    // Cria o readline normal
+    const rl = readline.createInterface({
         input: process.stdin,
-        output: process.stdout
+        output: process.stdout,
+        terminal: true
     });
-}
 
-function registerEvents() {
-    client.on("connect", onConnect);
-    client.on("data", onData);
-    client.on("close", onClose);
-    client.on("error", onError);
-}
+    // Intercepta o desenho
+    rl._writeToOutput = function _writeToOutput(stringToWrite) {
+        if (rl.stdoutMuted) {
+            rl.output.write('\x1B[2K\x1B[200D' + chalk.white('Senha: ') + '*'.repeat(rl.line.length));
+        } else {
+            rl.output.write(stringToWrite);
+        }
+    };
 
-function onConnect() {
-    console.log("Conectado ao servidor!");
+    console.log(chalk.yellow('--- Configuração de Conexão ---'));
     
-    readMessage();
-}
+    rl.question(chalk.white('Host [localhost]: '), (host) => {
+        host = host || 'localhost';
+        rl.question(chalk.white('Porta [8080]: '), (port) => {
+            port = port || '8080';
+            rl.question(chalk.white('Usuário: '), (username) => {
+                
+                // Ativa a camuflagem
+                rl.stdoutMuted = true; 
 
-function readMessage(message) {
-    rl.question(">> ", (message) => {
-        sendMessage(message);
+                rl.question(chalk.white('Senha: '), (password) => {
+                    rl.stdoutMuted = false; // Desativa
+                    console.log(); 
 
-        readMessage();
+                    network.connect({ host, port, username, password, rl, chalk });
+                });
+            });
+        });
     });
 }
 
-
-function sendMessage(message) {
-    client.write(message);
-}
-
-function onData(buffer) {
-    console.log(buffer.toString());
-}
-
-function onClose() {
-    console.log("Servidor desconectado.")
-}
-
-function onError(error) {
-    console.log(error.message);
-}
-
-start();
+startClient();
