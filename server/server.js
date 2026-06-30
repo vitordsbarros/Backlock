@@ -10,6 +10,9 @@ const PORT = process.env.PORT || 8080;
 
 async function bootstrap() {
     try {
+        if (!fs.existsSync(path.join(__dirname, '../data/access.vault'))) {
+            console.warn("\n Aviso: access.vault não encontrado. Execute o vaultManager primeiro.");
+        }
         // Aguarda a verificação/geração dos certificados
         await ensureCertificates();
 

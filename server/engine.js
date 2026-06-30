@@ -33,11 +33,13 @@ async function handleConnection(socket) {
             const packet = JSON.parse(data.toString().trim());
 
             if (packet.type === 'LOGIN') {
-                const isValid = await authenticateUser(packet.username, packet.password);
+                const normalizedUsername = packet.username.trim().toLowerCase();
+                
+                const isValid = await authenticateUser(normalizedUsername, packet.password);
                 
                 if (isValid) {
                     isAuthenticated = true;
-                    username = packet.username;
+                    username = normalizedUsername; // Define o nome normalizado
                     connectedClients.set(clientId, { socket, username });
                     
                     socket.write(JSON.stringify({ type: 'LOGIN_SUCCESS', message: 'Acesso concedido.' }) + '\n');

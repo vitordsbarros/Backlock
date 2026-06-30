@@ -5,14 +5,14 @@ const readline = require('readline');
 
 const VAULT_PATH = path.join(__dirname, '../data/access.vault');
 
-// 1. Cria o readline normal
+// Cria o readline normal
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
     terminal: true
 });
 
-// 2. O GRANDE TRUQUE: Interceptamos o motor de desenho do readline
+// Interceptamos o motor de desenho do readline
 rl._writeToOutput = function _writeToOutput(stringToWrite) {
     if (rl.stdoutMuted) {
         // Apaga a linha inteira, volta pro início, escreve o prompt e bota * do tamanho da senha em memória
@@ -37,18 +37,26 @@ function saveVault(vaultData) {
 
 console.log('=== ⬛ Backlock Admin Vault ===\n');
 
-rl.question('👤 Digite o nome do novo usuário: ', (username) => {
+rl.question('👤 Digite o nome do novo usuário: ', (rawUsername) => {
+    const username = rawUsername.trim().toLowerCase();
+
     if (!username) {
         console.log('❌ O nome não pode ser vazio.');
         process.exit(1);
     }
 
-    // 3. Ativamos a camuflagem antes da pergunta
     rl.stdoutMuted = true;
     
     rl.question('🔑 Digite a senha: ', async (password) => {
         rl.stdoutMuted = false; // Desativa a camuflagem
         console.log(); // Quebra de linha pro layout ficar bonito
+
+        // Bloqueia espaços na senha
+        if (password.includes(' ')) {
+            console.error('❌ Erro: A senha não pode conter espaços.');
+            rl.close();
+            return;
+        }
 
         try {
             const vault = loadVault();
