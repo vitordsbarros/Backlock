@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "server": "node --env-file=.env server/server.js",
-    "client": "node client/client.js"
+    "client": "node client/client.js",
+    "admin": "node admin/vaultManager.js"
   },
   "keywords": [],
   "author": "",

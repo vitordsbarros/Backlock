@@ -8,11 +8,15 @@ async function startClient() {
 
     console.clear();
     console.log(
-        chalk.redBright(
-            figlet.textSync('Backlock', { horizontalLayout: 'full' })
+        chalk.whiteBright(
+            figlet.textSync('Backlock', { font: 'alligator2', horizontalLayout: 'full' })
         )
     );
-    console.log(boxen(chalk.gray('Secure Terminal Environment'), { padding: 1, borderStyle: 'double', borderColor: 'red' }));
+    console.log(boxen(chalk.gray('STE - Secure Terminal Environment'), {
+        padding: 1,
+        borderStyle: 'classic',
+        borderColor: 'white'
+    }));
 
     // Cria o readline normal
     const rl = readline.createInterface({
@@ -31,19 +35,19 @@ async function startClient() {
     };
 
     console.log(chalk.yellow('--- Configuração de Conexão ---'));
-    
+
     rl.question(chalk.white('Host [localhost]: '), (host) => {
         host = host || 'localhost';
         rl.question(chalk.white('Porta [8080]: '), (port) => {
             port = port || '8080';
             rl.question(chalk.white('Usuário: '), (username) => {
-                
+
                 // Ativa a camuflagem
-                rl.stdoutMuted = true; 
+                rl.stdoutMuted = true;
 
                 rl.question(chalk.white('Senha: '), (password) => {
                     rl.stdoutMuted = false; // Desativa
-                    console.log(); 
+                    console.log();
 
                     network.connect({ host, port, username, password, rl, chalk });
                 });

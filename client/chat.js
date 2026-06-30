@@ -5,7 +5,7 @@ function setupChat(socket, username, rl, chalk) {
     console.log(chalk.gray('Você está no chat. Digite sua mensagem. Comandos disponíveis: /clear, /exit'));
     
     // Configura o prefixo de quem está digitando
-    rl.setPrompt(chalk.greenBright(`${username} > `));
+    rl.setPrompt(chalk.whiteBright(`${username} > `));
     rl.prompt();
 
     rl.on('line', (line) => {
